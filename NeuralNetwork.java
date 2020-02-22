@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.io.*;
 import MatrixMath.*;
-public class NN implements Serializable { 
+public class NeuralNetwork implements Serializable { 
     /**
      *
      */
@@ -15,37 +15,37 @@ public class NN implements Serializable {
   int[] arc = {7, 4, 3, 2};
   int fitness=0;
   boolean[] activation = {false, false, false, false, false};//tanh,sin, cos,tanh, sigmoid
-  public NN(int[] arc, int activation) {
+  public NeuralNetwork(int[] arc, int activation) {
     this.activation[activation] = true;
     this.arc = arc;
     I = new Matrix(arc[0], 1);
     IH = new Matrix(arc[1], arc[0]);
     IH.randomize();
-    IH=IH.rAdd(IH);
+    IH= Matrix.rAdd(IH);
     HH = new Matrix[arc.length-2];
     H = new Matrix[arc.length-2];
     for (int i = 0; i < arc.length-2; i++) {
       H[i] = new Matrix(arc[i+1], 1);
       HH[i] = new Matrix(arc[i+2], arc[i+1]);
       HH[i].randomize();
-      HH[i] = HH[i].rAdd(HH[i]);
+      HH[i] = Matrix.rAdd(HH[i]);
     }
     HO = new Matrix(arc[arc.length-1], arc[arc.length-2]);
     HO.randomize();
-    HO = HO.rAdd(HO);
+    HO = Matrix.rAdd(HO);
     O = new Matrix(HO.m, 1);
   }
-  static void serialize(NN nn) {
-    if (nn.fitness > deserialize().fitness) {
+  static void serialize(NeuralNetwork NeuralNetwork) {
+    if (NeuralNetwork.fitness > deserialize().fitness) {
       try {
         
         FileOutputStream fileOut =
-        new FileOutputStream("bestnn.nn");
+        new FileOutputStream("bestNeuralNetwork.NeuralNetwork");
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-        out.writeObject(nn);
+        out.writeObject(NeuralNetwork);
         out.close();
         fileOut.close();
-        System.out.printf("Serialized data is saved in bestnn.nn");
+        System.out.printf("Serialized data is saved in bestNeuralNetwork.NeuralNetwork");
       } 
       catch (IOException i) {
         i.printStackTrace();
@@ -56,26 +56,26 @@ public class NN implements Serializable {
       }
     }
   }
-  static NN deserialize() {
+  static NeuralNetwork deserialize() {
     int[] arc = {7, 4, 3, 2};
-    NN nn=null;
+    NeuralNetwork NeuralNetwork=null;
     try {
-      FileInputStream fileIn = new FileInputStream("bestnn.nn");
+      FileInputStream fileIn = new FileInputStream("bestNeuralNetwork.NeuralNetwork");
       ObjectInputStream in = new ObjectInputStream(fileIn);
-      nn = (NN) in.readObject();
+      NeuralNetwork = (NeuralNetwork) in.readObject();
       in.close();
       fileIn.close();
     } 
     catch (IOException i) {
       //i.printStackTrace();
-      return new NN(arc, 1);
+      return new NeuralNetwork(arc, 1);
     } 
     catch (ClassNotFoundException c) {
       //c.printStackTrace();
-      return new NN(arc, 1);
+      return new NeuralNetwork(arc, 1);
     }
-    //System.out.println("NN loaded"+" It's fitness is "+nn.fitness);
-    return nn;
+    //System.out.println("NeuralNetwork loaded"+" It's fitness is "+NeuralNetwork.fitness);
+    return NeuralNetwork;
   }
   void mutate() {
     IH=Matrix.rAdd(IH); 
@@ -95,7 +95,7 @@ public class NN implements Serializable {
       H[i] = Matrix.mMult(HH[i-1], H[i-1]);
     }
     O = Matrix.mMult(HO, H[H.length-1]);
-    O = O.tanh(O);
+    O = Matrix.tanh(O);
     float[] out = new float[O.m];
     for (int i = 0; i < O.m; i++) {
       out[i]= O.table[i][0];
