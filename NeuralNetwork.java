@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.io.*;
 import MatrixMath.*;
-class NN implements Serializable { 
+pulbic class NN implements Serializable { 
     /**
      *
      */
